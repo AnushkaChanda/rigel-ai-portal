@@ -39,7 +39,8 @@ $internships = [
             'Course Fee: ₹399/- (excluding platform fees)',
             'Merchandise Fee: ₹149/-',
             'No Hidden Charges or extra amounts payable.'
-        ]
+        ],
+        'link' => 'https://forms.rigelfoundation.org.in/skillsphere-internship-registration-2026/'
     ],
     'quickpro' => [
         'title' => 'QuickPro Internship',
@@ -68,7 +69,8 @@ $internships = [
             'Course Fees: ₹1299/- (excluding platform fees)',
             'Merchandise Fees: ₹149/-',
             'No Hidden Charges or extra amounts payable.'
-        ]
+        ],
+        'link' => 'https://forms.rigelfoundation.org.in/quickpro-internship-registration-2026/'
     ],
     'devsphere' => [
         'title' => 'DevSphere Internship',
@@ -99,7 +101,8 @@ $internships = [
             'Course Fees: ₹999/- (excluding platform fees)',
             'Merchandise Fees: ₹149/-',
             'No Hidden Charges or extra amounts payable.'
-        ]
+        ],
+        'link' => 'https://forms.rigelfoundation.org.in/devsphere-internship-registration-2026/'
     ],
     'psyedge' => [
         'title' => 'PsyEdge Internship',
@@ -129,7 +132,8 @@ $internships = [
             'Course Fees: ₹599/- (excluding platform fees)',
             'Merchandise Fees: ₹149/-',
             'No Hidden Charges or extra amounts payable.'
-        ]
+        ],
+        'link' => 'https://forms.rigelfoundation.org.in/psyedge-internship-registration-2026/'
     ]
 ];
 
@@ -179,8 +183,8 @@ $details = $internships[$track];
                 <?php endforeach; ?>
             </div>
             <div style="margin-top: 2rem;">
-                <!-- Link updated to internal application form -->
-                <a href="application_form.php?track=<?php echo htmlspecialchars($track); ?>" class="btn btn-primary btn-large" style="padding: 1rem 3rem;">Apply Now</a>
+                <!-- Link updated to external form -->
+                <a href="<?php echo htmlspecialchars($details['link']); ?>" target="_blank" class="btn btn-primary btn-large" style="padding: 1rem 3rem;">Apply Now</a>
             </div>
         </div>
     </div>

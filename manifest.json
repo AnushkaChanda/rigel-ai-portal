@@ -1,0 +1,21 @@
+{
+  "name": "Rigel Mock Interview App",
+  "short_name": "Rigel",
+  "description": "AI-powered mock interview and career portal",
+  "start_url": "./index.php",
+  "display": "standalone",
+  "background_color": "#0a0f1c",
+  "theme_color": "#004aad",
+  "icons": [
+    {
+      "src": "images/logo.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "images/logo.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

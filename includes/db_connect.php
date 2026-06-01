@@ -11,7 +11,7 @@
 // HOSTINGER LIVE DATABASE SETTINGS
 // (Uncomment these when uploading to the live server)
 // ==========================================
-$host = '193.203.184.43'; // srv1261.hstgr.io
+$host = 'localhost'; // Use localhost when the code is hosted on Hostinger
 $port = '3306';      
 $dbname = 'u795710498_careerai'; 
 $username = 'u795710498_careeruser';  

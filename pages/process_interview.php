@@ -10,7 +10,7 @@ header('Content-Type: application/json');
 // }
 
 // Replace with actual HuggingFace API Token provided by user later
-$hf_api_key = "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";
+$hf_api_key = "hf_YOUR_NEW_TOKEN_HERE";
 
 // Expected input: the filename of the uploaded video
 $data = json_decode(file_get_contents('php://input'), true);

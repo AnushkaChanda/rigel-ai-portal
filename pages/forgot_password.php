@@ -49,7 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $mail->Password   = 'qsab xkej kowp rrtj';   // App Password
                 $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
                 $mail->Port       = 465;
-                $mail->setFrom('no-reply@rigelfoundation.org.in', 'Rigel Foundation');
+                $mail->setFrom('chandaanushka25@gmail.com', 'Rigel Foundation');
 
                 // Recipients
                 $mail->addAddress($email, $user['full_name']);
@@ -75,6 +75,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $mail->send();
                 $success = "A password reset link has been sent to your email address.";
             } catch (Exception $e) {
+                error_log("PHPMailer Forgot Password Error: " . $mail->ErrorInfo . " | Exception: " . $e->getMessage());
                 $error = "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
             }
         } else {

@@ -1,5 +1,6 @@
 <?php
 session_start();
+set_time_limit(300);
 
 header('Content-Type: application/json');
 
@@ -20,7 +21,8 @@ if (!$data || !isset($data['summary'])) {
 $to_admin = "chandaanushka25@gmail.com";
 $summary = $data['summary'];
 
-// Attempt to get user's email from database if they are logged in
+// Attempt to get user's email from database if they are logged in,
+// otherwise fall back to session-stored applicant details (guest flow)
 $user_email = null;
 $user_name = "Candidate";
 if (isset($_SESSION['user_id'])) {
@@ -32,6 +34,10 @@ if (isset($_SESSION['user_id'])) {
         $user_email = $user_row['email'];
         $user_name = $user_row['full_name'];
     }
+} else {
+    // Guest applicant — use session data saved from the application form
+    if (!empty($_SESSION['user_email'])) $user_email = $_SESSION['user_email'];
+    if (!empty($_SESSION['full_name']))  $user_name = $_SESSION['full_name'];
 }
 
 $mail = new PHPMailer(true);
@@ -51,12 +57,16 @@ try {
     
     $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
     $mail->Port       = 465;
-    $mail->setFrom('no-reply@rigelfoundation.org.in', 'career|rigel foundation');
+    $mail->setFrom('chandaanushka25@gmail.com', 'career | rigel foundation');
 
     // 1. Send Email to Rigel Foundation Admin
     $mail->addAddress($to_admin);
     $mail->isHTML(true);
     $mail->Subject = "New Interview Completed - Rigel Foundation";
+    $summary_html = htmlspecialchars($summary);
+    $summary_html = preg_replace('/\*\*(.*?)\*\*/', '<strong>$1</strong>', $summary_html);
+    $summary_html = nl2br($summary_html);
+
     $mail->Body    = "
     <html>
     <head><title>New Interview Submission</title></head>
@@ -64,7 +74,9 @@ try {
     <h2>Rigel Foundation AI Interview App</h2>
     <p>A candidate ({$user_name}) has just completed their automated interview.</p>
     <h3>AI Generated Summary:</h3>
-    <p>{$summary}</p>
+    <div style='background: #f4f4f4; padding: 15px; border-left: 4px solid #004aad;'>
+        {$summary_html}
+    </div>
     <hr>
     <p><em>The full video recording is saved securely on the server.</em></p>
     </body>
@@ -92,6 +104,7 @@ try {
 
     echo json_encode(["status" => "success", "message" => "Emails sent successfully"]);
 } catch (Exception $e) {
+    error_log("PHPMailer Error: " . $mail->ErrorInfo . " | Exception: " . $e->getMessage());
     http_response_code(500);
     echo json_encode(["status" => "error", "message" => "Message could not be sent. Mailer Error: {$mail->ErrorInfo}"]);
 }

@@ -1,7 +1,7 @@
 <?php
 session_start();
 // Admin check
-if (!isset($_SESSION['user_id']) || $_SESSION['account_type'] !== 'admin') {
+if (!isset($_SESSION['user_id']) || !in_array($_SESSION['account_type'], ['admin', 'superadmin'])) {
     header("Location: dashboard.php");
     exit;
 }
@@ -11,7 +11,7 @@ include '../includes/header.php';
 
 try {
     // If the table doesn't exist yet, this will throw an error, which we catch gracefully.
-    $stmt = $pdo->query("SELECT * FROM interviews ORDER BY created_at DESC");
+    $stmt = $pdo->query("SELECT interviews.*, users.full_name FROM interviews LEFT JOIN users ON interviews.user_id = users.id ORDER BY interviews.created_at DESC");
     $interviews = $stmt->fetchAll();
 } catch (PDOException $e) {
     $interviews = [];
@@ -46,7 +46,7 @@ try {
                 <?php foreach ($interviews as $interview): ?>
                     <div class="glass-card fade-in-up" style="position: relative; display: flex; flex-direction: column; align-items: flex-start; padding: 2rem; border-radius: 16px; background: var(--bg-card); border: 1px solid var(--glass-border); box-shadow: var(--shadow-sm); transition: transform 0.3s;">
                         <div style="display: flex; justify-content: space-between; width: 100%; margin-bottom: 1rem; border-bottom: 1px solid var(--border-light); padding-bottom: 1rem;">
-                            <span style="font-weight: 600; color: var(--primary-blue);"><i class="fa-solid fa-user-circle"></i> Candidate #<?php echo $interview['id']; ?></span>
+                            <span style="font-weight: 600; color: var(--primary-blue);"><i class="fa-solid fa-user-circle"></i> <?php echo htmlspecialchars($interview['full_name'] ?? 'Candidate #' . $interview['id']); ?></span>
                             <span style="font-size: 0.85rem; color: var(--text-muted);"><i class="fa-regular fa-clock"></i> <?php echo date('M j, Y g:i A', strtotime($interview['created_at'])); ?></span>
                         </div>
                         
@@ -59,7 +59,12 @@ try {
                             </div>
                             <div style="padding: 1.5rem; color: var(--text-light-shade); font-size: 0.95rem; line-height: 1.8; position: relative;">
                                 <div style="position: relative; z-index: 1; padding-left: 1rem; border-left: 3px solid var(--primary-blue);">
-                                    <?php echo nl2br(htmlspecialchars($interview['summary'])); ?>
+                                    <?php 
+                                        $summary_html = htmlspecialchars($interview['summary']);
+                                        // Parse markdown bold
+                                        $summary_html = preg_replace('/\*\*(.*?)\*\*/', '<strong>$1</strong>', $summary_html);
+                                        echo nl2br($summary_html); 
+                                    ?>
                                 </div>
                             </div>
                         </div>

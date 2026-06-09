@@ -41,16 +41,26 @@ try {
         </div>
     </div>
 
-    <div class="action-grid" style="margin-top: 2rem;">
-        <div class="action-card">
-            <h3>Manage Questions</h3>
-            <p>Add or edit the AI preset interview questions.</p>
-            <button class="btn btn-primary" onclick="alert('Module coming in Phase 9')">Manage</button>
+    <div class="action-grid" style="margin-top: 2rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem;">
+        <div class="action-card" style="padding: 2rem; border-radius: 16px; background: var(--glass-bg); backdrop-filter: blur(10px); border: 1px solid var(--border-light); box-shadow: var(--shadow-sm);">
+            <h3 style="margin-bottom: 0.5rem; color: var(--text-dark);">Manage Internships</h3>
+            <p style="color: var(--text-muted); margin-bottom: 1.5rem; font-size: 0.95rem;">Add, edit, or remove custom internship programs.</p>
+            <a href="admin_internships.php" class="btn btn-primary" style="display: inline-block;">Manage</a>
         </div>
-        <div class="action-card">
-            <h3>User Management</h3>
-            <p>View user progress and manage accounts.</p>
-            <button class="btn btn-outline" onclick="alert('Module coming in Phase 9')">View Users</button>
+        <div class="action-card" style="padding: 2rem; border-radius: 16px; background: var(--glass-bg); backdrop-filter: blur(10px); border: 1px solid var(--border-light); box-shadow: var(--shadow-sm);">
+            <h3 style="margin-bottom: 0.5rem; color: var(--text-dark);">Manage Questions</h3>
+            <p style="color: var(--text-muted); margin-bottom: 1.5rem; font-size: 0.95rem;">Add or edit the AI preset interview questions.</p>
+            <a href="admin_questions.php" class="btn btn-primary" style="display: inline-block;">Manage</a>
+        </div>
+        <div class="action-card" style="padding: 2rem; border-radius: 16px; background: var(--glass-bg); backdrop-filter: blur(10px); border: 1px solid var(--border-light); box-shadow: var(--shadow-sm);">
+            <h3 style="margin-bottom: 0.5rem; color: var(--text-dark);">User Management</h3>
+            <p style="color: var(--text-muted); margin-bottom: 1.5rem; font-size: 0.95rem;">View user progress and manage accounts.</p>
+            <a href="admin_users.php" class="btn btn-outline" style="display: inline-block;">View Users</a>
+        </div>
+        <div class="action-card" style="padding: 2rem; border-radius: 16px; background: var(--glass-bg); backdrop-filter: blur(10px); border: 1px solid var(--border-light); box-shadow: var(--shadow-sm);">
+            <h3 style="margin-bottom: 0.5rem; color: var(--text-dark);">Interview Reports</h3>
+            <p style="color: var(--text-muted); margin-bottom: 1.5rem; font-size: 0.95rem;">View AI summaries and raw transcripts.</p>
+            <a href="reports.php" class="btn btn-primary" style="display: inline-block;">View Reports</a>
         </div>
     </div>
 </div>

@@ -1,12 +1,19 @@
 <?php
 session_start();
+set_time_limit(300);
 
-// Ensure the user is logged in
-// if (!isset($_SESSION['user_id'])) {
-//     http_response_code(401);
-//     echo json_encode(["status" => "error", "message" => "Unauthorized"]);
-//     exit;
-// }
+// Check if file upload limits are exceeded before checking $_FILES
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (empty($_FILES) && empty($_POST) && isset($_SERVER['CONTENT_LENGTH']) && $_SERVER['CONTENT_LENGTH'] > 0) {
+        $postMax = ini_get('post_max_size');
+        http_response_code(413); // Payload Too Large
+        echo json_encode([
+            "status" => "error", 
+            "message" => "The recording file size is too large for the local server's limit (post_max_size is currently {$postMax}). Please increase post_max_size and upload_max_filesize in your php.ini."
+        ]);
+        exit;
+    }
+}
 
 // Check if file is uploaded
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['video'])) {

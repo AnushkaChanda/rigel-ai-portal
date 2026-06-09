@@ -1,32 +1,63 @@
-    <footer>
-        <div class="footer-content">
-            <div class="footer-links" style="max-width: 250px;">
-                <h5>Rigel Foundation</h5>
-                <p style="color: #a0aec0; font-size: 0.95rem; line-height: 1.6; margin-bottom: 10px;">Explore our complete mission and other grassroots initiatives.</p>
-                <a href="https://www.rigelfoundation.org.in" target="_blank" style="color: var(--primary-color, #4a90e2); font-weight: 500;">www.rigelfoundation.org.in</a>
+    </main><!-- end .main-content -->
+</div><!-- end .app-layout -->
+
+<!-- ========== BOTTOM NAVIGATION FOOTER ========== -->
+<footer class="bottom-nav-footer">
+    <div class="bottom-nav-inner">
+
+        <!-- Brand Column -->
+        <div class="bottom-nav-brand">
+            <div class="bottom-nav-brand-row">
+                <img src="<?php echo $base_url; ?>images/rigel_logo.png" alt="Rigel Foundation Logo" class="bottom-nav-logo">
+                <div>
+                    <span class="bottom-nav-brand-title">Rigel Career Portal</span>
+                    <span class="bottom-nav-brand-sub">Rigel Foundation</span>
+                </div>
             </div>
-            <div class="footer-links">
-                <h5><a href="<?php echo $base_url; ?>pages/team.php" style="color: inherit; text-decoration: none;">Rigel Tech Team</a></h5>
-                <p style="color: #a0aec0; font-size: 0.95rem; line-height: 1.6; margin-bottom: 10px;">Meet the developers behind Rigel Portal.</p>
-                <a href="<?php echo $base_url; ?>pages/team.php" style="color: var(--primary-color, #4a90e2); font-weight: 500;">View Profiles <i class="fa-solid fa-arrow-right"></i></a>
-            </div>
-            <div class="footer-links">
-                <h5>Contact Us</h5>
-                <ul>
-                    <li><a href="https://www.facebook.com/rigelfoundation/" target="_blank"><i class="fa-brands fa-facebook"></i> Facebook</a></li>
-                    <li><a href="https://www.instagram.com/rigelfoundation/" target="_blank"><i class="fa-brands fa-instagram"></i> Instagram</a></li>
-                    <li><a href="https://www.linkedin.com/company/rigelfoundation/" target="_blank"><i class="fa-brands fa-linkedin"></i> LinkedIn</a></li>
-                </ul>
-            </div>
-            <div class="footer-links" style="max-width: 250px;">
-                <h5>Privacy</h5>
-                <p style="color: #a0aec0; font-size: 0.95rem; line-height: 1.6;">We prioritize your data security. All interview recordings are processed securely and strictly used for AI evaluation purposes only.</p>
-            </div>
+            <p class="bottom-nav-tagline">A Government of India Registered<br>Non-Profit Organisation<br>Section 8 &bull; Licence No. 151249</p>
+            <?php if (!isset($_SESSION['user_id'])): ?>
+            <a href="<?php echo $base_url; ?>pages/login.php" class="bottom-nav-admin-link"><i class="fa-solid fa-lock"></i> Admin Login</a>
+            <?php endif; ?>
         </div>
-        <div class="footer-bottom">
-            <p>&copy; <?php echo date("Y"); ?> Rigel Foundation. All rights reserved. Designed for Excellence.</p>
+
+        <!-- Navigation Column -->
+        <div class="bottom-nav-col">
+            <h4 class="bottom-nav-heading">Navigation</h4>
+            <ul>
+                <li><a href="<?php echo $base_url; ?>index.php" class="<?php echo basename($_SERVER['PHP_SELF']) == 'index.php' ? 'active' : ''; ?>"><i class="fa-solid fa-house"></i> Home</a></li>
+                <li><a href="<?php echo $base_url; ?>pages/team.php" class="<?php echo basename($_SERVER['PHP_SELF']) == 'team.php' ? 'active' : ''; ?>"><i class="fa-solid fa-users"></i> Our Team</a></li>
+                <?php if (isset($_SESSION['user_id']) && in_array($_SESSION['account_type'] ?? '', ['admin', 'superadmin'])): ?>
+                <li><a href="<?php echo $base_url; ?>pages/dashboard.php"><i class="fa-solid fa-gauge-high"></i> Dashboard</a></li>
+                <?php endif; ?>
+            </ul>
         </div>
-    </footer>
-    <script src="<?php echo $base_url; ?>js/main.js"></script>
+
+        <!-- Quick Links Column -->
+        <div class="bottom-nav-col">
+            <h4 class="bottom-nav-heading">Quick Links</h4>
+            <ul>
+                <li><a href="https://www.rigelfoundation.org.in" target="_blank"><i class="fa-solid fa-globe"></i> Main Website</a></li>
+                <li><a href="mailto:info@rigelfoundation.org.in"><i class="fa-solid fa-envelope"></i> Contact Us</a></li>
+            </ul>
+        </div>
+
+        <!-- Social Column -->
+        <div class="bottom-nav-col">
+            <h4 class="bottom-nav-heading">Follow Us</h4>
+            <ul>
+                <li><a href="https://www.facebook.com/rigelfoundation/" target="_blank"><i class="fa-brands fa-facebook"></i> Facebook</a></li>
+                <li><a href="https://www.instagram.com/rigelfoundation/" target="_blank"><i class="fa-brands fa-instagram"></i> Instagram</a></li>
+                <li><a href="https://www.linkedin.com/company/rigelfoundation/" target="_blank"><i class="fa-brands fa-linkedin"></i> LinkedIn</a></li>
+            </ul>
+        </div>
+
+    </div>
+
+    <!-- Bottom Bar -->
+    <div class="bottom-nav-bar">
+        <p>&copy; <?php echo date("Y"); ?> Rigel Foundation. All rights reserved. &mdash; <a href="https://www.rigelfoundation.org.in" target="_blank">www.rigelfoundation.org.in</a></p>
+    </div>
+</footer>
+
 </body>
 </html>

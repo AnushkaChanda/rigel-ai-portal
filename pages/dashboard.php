@@ -20,7 +20,7 @@ if (!isset($_SESSION['user_id'])) {
 
 <?php
 // Route based on account type
-if (isset($_SESSION['account_type']) && $_SESSION['account_type'] === 'admin') {
+if (isset($_SESSION['account_type']) && in_array($_SESSION['account_type'], ['admin', 'superadmin'])) {
     include 'admin_dashboard.php';
 } else {
     include 'user_dashboard.php';

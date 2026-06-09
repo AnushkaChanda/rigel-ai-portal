@@ -1,0 +1,10 @@
+# Environment variables
+.env
+
+# Uploaded video recordings
+uploads/
+*.webm
+
+# Database/Cache / OS files
+.DS_Store
+Thumbs.db

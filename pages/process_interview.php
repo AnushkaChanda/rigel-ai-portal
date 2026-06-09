@@ -1,5 +1,6 @@
 <?php
 session_start();
+set_time_limit(300);
 
 header('Content-Type: application/json');
 
@@ -9,8 +10,9 @@ header('Content-Type: application/json');
 //     exit;
 // }
 
-// Replace with actual HuggingFace API Token provided by user later
-$hf_api_key = "hf_YOUR_NEW_TOKEN_HERE";
+// Load Groq API Key dynamically using shared environment loader
+require_once dirname(__DIR__) . '/includes/env_loader.php';
+$GROQ_API_KEY = getGroqApiKey();
 
 // Expected input: the filename of the uploaded video
 $data = json_decode(file_get_contents('php://input'), true);
@@ -29,56 +31,88 @@ if (!file_exists($filePath)) {
     exit;
 }
 
-// NOTE: HuggingFace Whisper API expects an audio file. In a real scenario, you would 
-// extract audio from the .webm (e.g. using FFmpeg) before sending.
+// ---------------------------------------------------------
+// STEP 1: Transcription using Groq API (Alternative to OpenAI)
+// ---------------------------------------------------------
+// Grok does not currently offer a Speech-to-Text service, so we use Groq's Whisper as the STT engine.
+$cfile = new CURLFile($filePath, mime_content_type($filePath), $fileName);
+$postData = array(
+    "file" => $cfile,
+    "model" => "whisper-large-v3-turbo",
+    "prompt" => "The speaker is attending a technical software engineering interview in India. Common technical words and university names: B.Tech, KIIT, AI, ML, Python, React, JavaScript."
+);
 
-// ---------------------------------------------------------
-// STEP 1: Transcription using HuggingFace Whisper API (Mocked logic)
-// ---------------------------------------------------------
 $ch = curl_init();
-$audioData = file_get_contents($filePath);
-
 curl_setopt_array($ch, array(
-    CURLOPT_URL => "https://api-inference.huggingface.co/models/openai/whisper-large-v3",
+    CURLOPT_URL => "https://api.groq.com/openai/v1/audio/transcriptions",
     CURLOPT_RETURNTRANSFER => true,
     CURLOPT_POST => true,
-    CURLOPT_POSTFIELDS => $audioData,
+    CURLOPT_POSTFIELDS => $postData,
     CURLOPT_HTTPHEADER => array(
-        "Authorization: Bearer $hf_api_key",
-        "Content-Type: application/octet-stream"
+        "Authorization: Bearer $GROQ_API_KEY"
     ),
 ));
 $response = curl_exec($ch);
-$transcriptionData = json_decode($response, true);
-$transcript = (is_array($transcriptionData) && isset($transcriptionData['text'])) ? $transcriptionData['text'] : "Mock transcript: The applicant demonstrated strong communication skills and clear dedication to the NGO's mission.";
+$httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 curl_close($ch);
 
+$transcriptionData = json_decode($response, true);
+
+if ($httpcode !== 200 || !isset($transcriptionData['text'])) {
+    http_response_code(500);
+    $errorMsg = isset($transcriptionData['error']['message']) ? $transcriptionData['error']['message'] : "Transcription failed.";
+    echo json_encode(["status" => "error", "message" => "Transcription API Error: " . $errorMsg]);
+    exit;
+}
+
+$transcript = $transcriptionData['text'];
+
 // ---------------------------------------------------------
-// STEP 2: Generate Summary using HuggingFace Mistral/LLaMA
+// STEP 2: Generate Evaluation using Groq LLM API
 // ---------------------------------------------------------
-$ch2 = curl_init();
-$prompt = "<s>[INST] Provide a detailed summary of the candidate's specific answers from the following interview transcript. Do not provide a generic evaluation (e.g. 'they are a good fit'). Focus strictly on summarizing the actual points and answers the candidate provided in the interview:\\n\\n" . $transcript . " [/INST]";
-$postData2 = json_encode([
-    "inputs" => $prompt,
-    "parameters" => [
-        "max_new_tokens" => 250,
-        "return_full_text" => false
+$prompt = "You are an expert technical recruiter and hiring manager. Provide a brief, concise executive summary of the following interview transcript using bullet points. Please intelligently auto-correct obvious speech-to-text transcription errors (for example, interpreting 'B.T.E.' as 'B.Tech', or 'KIT' as 'KIIT'). At the very end of your response, you MUST clearly state the final hiring decision as exactly '**VERDICT: SELECTED**' or '**VERDICT: REJECTED**', along with a one-sentence justification. Be decisive based on the candidate's clarity, skills, and relevance to the role.\n\nTranscript:\n" . $transcript;
+
+$llmData = json_encode([
+    "model" => "llama-3.3-70b-versatile", // Using Llama 3.3 on Groq
+    "messages" => [
+        [
+            "role" => "system",
+            "content" => "You are a helpful and precise HR assistant."
+        ],
+        [
+            "role" => "user",
+            "content" => $prompt
+        ]
     ]
 ]);
+
+$ch2 = curl_init();
 curl_setopt_array($ch2, array(
-    CURLOPT_URL => "https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.2",
+    CURLOPT_URL => "https://api.groq.com/openai/v1/chat/completions",
     CURLOPT_RETURNTRANSFER => true,
     CURLOPT_POST => true,
-    CURLOPT_POSTFIELDS => $postData2,
+    CURLOPT_POSTFIELDS => $llmData,
     CURLOPT_HTTPHEADER => array(
-        "Authorization: Bearer $hf_api_key",
+        "Authorization: Bearer $GROQ_API_KEY",
         "Content-Type: application/json"
     ),
 ));
 $response2 = curl_exec($ch2);
-$summaryData = json_decode($response2, true);
-$summary = (is_array($summaryData) && isset($summaryData[0]['generated_text'])) ? $summaryData[0]['generated_text'] : "Mock Summary: Highly recommended. Good fit for the team.";
+$httpcode2 = curl_getinfo($ch2, CURLINFO_HTTP_CODE);
 curl_close($ch2);
+
+$summaryData = json_decode($response2, true);
+
+if ($httpcode2 !== 200 || !isset($summaryData['choices'][0]['message']['content'])) {
+    http_response_code(500);
+    $errorMsg = isset($summaryData['error']['message']) ? $summaryData['error']['message'] : "Raw Response: " . $response2;
+    echo json_encode(["status" => "error", "message" => "Groq API Error: " . $errorMsg]);
+    exit;
+}
+
+$summary = $summaryData['choices'][0]['message']['content'];
+
+
 
 // ---------------------------------------------------------
 // STEP 3: Save to Database
